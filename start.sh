@@ -12,6 +12,9 @@ IS_ROOT=0       # 0 if program run as root.
 ROOT_UID=0      # Only users with $UID 0 have root privileges.
 HOME_DIR=${HOME} # The starting directory is the users home directory.
 MENU_ITEM=0     # The currently selected menu item
+KEY="no value yet"  # Last key pressed
+KEY_ENGLISH="Nothing" # Last key pressed in English
+ACCESS="FALSE"  # If a menu should be accessed
 
 # If the script is not run as root, some options may not be displayed.
 if [ "$UID" -ne "$ROOT_UID"  ]
@@ -20,23 +23,29 @@ then
     IS_ROOT=1
 fi 
 
-key="no value yet"  # Last key pressed
-KEY_ENGLISH="Nothing" # Last key pressed in English
-while true; do
-    clear
+keyinput ()
+{
+ unset K1 K2 K3
+ read -s -N1 -p "Press a key: "
+ K1="$REPLY"
+ read -s -N2 -t 0.001
+ K2="$REPLY"
+ read -s -N1 -t 0.001
+ K3="$REPLY"
+ KEY="$K1$K2$K3"
 
  # Convert the separate home-key to home-key_num_7:
- if [ "$key" = $'\x1b\x4f\x48' ]; then
-    key=$'\x1b\x5b\x31\x7e'
+ if [ "$KEY" = $'\x1b\x4f\x48' ]; then
+    KEY=$'\x1b\x5b\x31\x7e'
     #   Quoted string-expansion construct. 
  fi
 
  # Convert the separate end-key to end-key_num_1.
- if [ "$key" = $'\x1b\x4f\x46' ]; then
-    key=$'\x1b\x5b\x34\x7e'
+ if [ "$KEY" = $'\x1b\x4f\x46' ]; then
+    KEY=$'\x1b\x5b\x34\x7e'
  fi
 
- case "$key" in
+ case "$KEY" in
     $'\x1b\x5b\x32\x7e')  # Insert
      KEY_ENGLISH="Insert Key"
     ;;
@@ -50,7 +59,7 @@ while true; do
      KEY_ENGLISH="End Key"
     ;;
     $'\x1b\x5b\x35\x7e')  # Page_Up
-     KEY_ENGLISH="echo Page_Up"
+     KEY_ENGLISH="Page_Up"
     ;;
     $'\x1b\x5b\x36\x7e')  # Page_Down
      KEY_ENGLISH="Page_Down"
@@ -81,6 +90,10 @@ while true; do
     $'\x20')  # Space
      KEY_ENGLISH="Space Key"
     ;;
+    x)
+     # Access option
+     ACCESS="TRUE"
+    ;;
     d)
      date
     ;;
@@ -90,10 +103,16 @@ while true; do
     exit 0
     ;;
     *)
-     KEY_ENGLISH="$key"
-    ;;
+     KEY_ENGLISH="$KEY"
+     ;;
  esac
 
+}
+
+# Main program
+
+while true; do
+ clear
  # Stops the Menu from exceeding limits
  case $MENU_ITEM in
      -1)
@@ -125,16 +144,36 @@ while true; do
  echo "==========================================="
  echo "You pressed: ${KEY_ENGLISH}"
 
- unset K1 K2 K3
- read -s -N1 -p "Press a key: "
- K1="$REPLY"
- read -s -N2 -t 0.001
- K2="$REPLY"
- read -s -N1 -t 0.001
- K3="$REPLY"
- key="$K1$K2$K3"
-
+ keyinput  # Get input from the keyinput function
+ if [ $ACCESS == "TRUE" ]
+ then
+     case $MENU_ITEM in
+         0)
+             # Start Retroarch
+             retroarch
+             read -s -N1 "Press any key to continue."
+             ;;
+         1)
+             # Go to file picker for media files
+            ;;
+         2)
+             # Go to Settings
+             ;;
+         3)
+             # Shutdown
+             # poweroff
+             ;;
+         *)
+             echo "Unknown command."
+             read -p "Press any key to continue."
+             ;;
+     esac
+ fi
+ ACCESS="FALSE" # Resetting the ACCESS variable so that the menu does
+                # not select an item on its own.
 done
+
+
 
 exit $?
 
