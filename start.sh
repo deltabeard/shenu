@@ -15,6 +15,7 @@ MENU_ITEM=0     # The currently selected menu item
 KEY="no value yet"  # Last key pressed
 KEY_ENGLISH="Nothing" # Last key pressed in English
 ACCESS="FALSE"  # If a menu should be accessed
+COLUMNS=50      # Can't get number of columns without tput, so setting it here.
 
 # If the script is not run as root, some options may not be displayed.
 if [ "$UID" -ne "$ROOT_UID"  ]
@@ -109,6 +110,18 @@ keyinput ()
 
 }
 
+output ()
+{
+    REPEAT=$COLUMNS
+    let REPEAT/=2
+    let REPEAT-=11
+
+    for i in `seq 1 $REPEAT`;
+    do
+        echo -n "$TEXT_TO_REPEAT"
+    done
+}
+
 # Main program
 
 while true; do
@@ -123,7 +136,9 @@ while true; do
          ;;
  esac
 
- echo "================ MAIN MENU ================"
+ TEXT_TO_REPEAT="="; output;
+ echo -n " MAIN MENU "
+ TEXT_TO_REPEAT="="; output;
  echo
  if [ $MENU_ITEM -eq 0 ]; then echo -ne "\e[43m"; fi
  echo "                 Retroarch                 "
@@ -150,8 +165,9 @@ while true; do
      case $MENU_ITEM in
          0)
              # Start Retroarch
-             retroarch
-             read -s -N1 "Press any key to continue."
+             clear
+             echo "Starting Retroarch"
+             retroarch &> /dev/null
              ;;
          1)
              # Go to file picker for media files
