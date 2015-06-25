@@ -114,7 +114,7 @@ output ()
 {
     REPEAT=$COLUMNS
     let REPEAT/=2
-    let REPEAT-=11
+    let REPEAT-=$TEXT_LENGTH  # Half the length of the text
 
     for i in `seq 1 $REPEAT`;
     do
@@ -136,27 +136,39 @@ while true; do
          ;;
  esac
 
- TEXT_TO_REPEAT="="; output;
+ TEXT_LENGTH=5; TEXT_TO_REPEAT="="; output;
  echo -n " MAIN MENU "
- TEXT_TO_REPEAT="="; output;
- echo
+ TEXT_LENGTH=6; TEXT_TO_REPEAT="="; output;
+ echo; echo;
+
  if [ $MENU_ITEM -eq 0 ]; then echo -ne "\e[43m"; fi
- echo "                 Retroarch                 "
+ TEXT_LENGTH=6; TEXT_TO_REPEAT=" "; output;
+ echo -n "  Retroarch "
+ TEXT_TO_REPEAT=" "; output; echo;
  if [ $MENU_ITEM -eq 0 ]; then echo -ne "\e[40m"; fi
+
  if [ $MENU_ITEM -eq 1 ]; then echo -ne "\e[43m"; fi
- echo "                Media Player               "
+ TEXT_LENGTH=7; TEXT_TO_REPEAT=" "; output;
+ echo -n " Media Player "
+ TEXT_TO_REPEAT=" "; output; echo;
  if [ $MENU_ITEM -eq 1 ]; then echo -ne "\e[40m"; fi
+
  if [ $MENU_ITEM -eq 2 ]; then echo -ne "\e[43m"; fi
- echo "                  Settings                 "
+ TEXT_LENGTH=5; TEXT_TO_REPEAT=" "; output;
+ echo -n " Settings "
+ TEXT_TO_REPEAT=" "; output; echo;
  if [ $MENU_ITEM -eq 2 ]; then echo -ne "\e[40m"; fi
+
  if [ $MENU_ITEM -eq 3 ]; then echo -ne "\e[43m"; fi
- echo "                  Shutdown                 "
+ TEXT_LENGTH=5; TEXT_TO_REPEAT=" "; output;
+ echo -n " Shutdown "
+ TEXT_TO_REPEAT=" "; output; echo;
  if [ $MENU_ITEM -eq 3 ]; then echo -ne "\e[40m"; fi
  echo
  echo
  echo
  echo "Menu item: ${MENU_ITEM}"
- echo "==========================================="
+ TEXT_LENGTH=0; TEXT_TO_REPEAT="="; output; output; echo;
  echo "You pressed: ${KEY_ENGLISH}"
 
  keyinput  # Get input from the keyinput function
