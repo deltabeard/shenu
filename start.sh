@@ -94,6 +94,16 @@ while true; do
     ;;
  esac
 
+ # Stops the Menu from exceeding limits
+ case $MENU_ITEM in
+     -1)
+         MENU_ITEM=0
+         ;;
+     4)
+         MENU_ITEM=3 # Last item in the Menu
+         ;;
+ esac
+
  echo "================ MAIN MENU ================"
  echo
  if [ $MENU_ITEM -eq 0 ]; then echo -ne "\e[43m"; fi
