@@ -1,3 +1,5 @@
+Note: This project is abandoned.
+
 <h1 align="center">shenu</h1>
 <p align="center">Pronounced <i>shen-you</i> - 'sh' as in 'Bash' and 'enu' as in 'Menu'</p>
 
